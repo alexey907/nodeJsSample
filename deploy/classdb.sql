@@ -1,0 +1,109 @@
+
+CREATE TABLE `companies` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `description` varchar(1023) DEFAULT NULL,
+  `zip` int(11) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `company_type` (
+  `companyID` int(11) DEFAULT NULL,
+  `typeID` int(11) DEFAULT NULL,
+  UNIQUE KEY `company_type_unique` (`companyID`,`typeID`),
+  KEY `company_type_fk2` (`typeID`),
+  CONSTRAINT `company_type_fk` FOREIGN KEY (`companyID`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `company_type_ibfk_2` FOREIGN KEY (`typeID`) REFERENCES `types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE `images` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `languages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+);
+CREATE TABLE `lawyer_language` (
+  `lawyerID` int(11) DEFAULT NULL,
+  `languageID` int(11) DEFAULT NULL,
+  UNIQUE KEY `lawyer_language_unique` (`lawyerID`,`languageID`),
+  KEY `lawyer_language_fk2` (`languageID`),
+  CONSTRAINT `lawyer_language_ibfk_1` FOREIGN KEY (`lawyerID`) REFERENCES `lawyers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `lawyer_language_ibfk_2` FOREIGN KEY (`languageID`) REFERENCES `languages` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `lawyer_service` (
+  `lawyerID` int(11) DEFAULT NULL,
+  `serviceID` int(11) DEFAULT NULL,
+  UNIQUE KEY `lawyer_service_unique` (`lawyerID`,`serviceID`),
+  KEY `lawyer_service_fk2` (`serviceID`),
+  CONSTRAINT `lawyer_service_ibfk_1` FOREIGN KEY (`lawyerID`) REFERENCES `lawyers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `lawyer_service_ibfk_2` FOREIGN KEY (`serviceID`) REFERENCES `service` (`id`)
+) ;
+
+CREATE TABLE `lawyers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uzvername` varchar(40) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `shortname` varchar(100) DEFAULT NULL,
+  `zip` int(11) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `imageURL` varchar(255) DEFAULT NULL,
+  `imageID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ;
+
+CREATE TABLE `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `body` text,
+  `imageID` int(11) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `userID` (`userID`),
+  KEY `imageID` (`imageID`),
+  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`id`),
+  CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`imageID`) REFERENCES `images` (`id`)
+);
+
+CREATE TABLE `service` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+);
+
+CREATE TABLE `types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+);
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) DEFAULT NULL,
+  `password` char(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `role` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+CREATE TRIGGER onUserCreate AFTER INSERT ON users FOR EACH ROW INSERT INTO posts(userID, type) VALUES (new.id, 'profile');
+

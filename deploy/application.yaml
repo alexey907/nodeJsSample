@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: class-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: class
@@ -14,13 +14,9 @@ spec:
     spec:
       containers:
       - name: class-container
-        image:  k8s.gcr.io/busybox
+        image:  index.docker.io/away907/class-repo:latest
         ports:
-        - containerPort: 8888
-        command: ["sh", "-c"]
-        args:
-        - 'while true; do 
-            printf "HTTP/1.1 200 OK\nContent-Type: text/html; charset=UTF-8\n\nThis is class project in DigitalOcean!" | nc -l -p 8080;
-          done;'
+        - containerPort: 8080
+        
        
       
